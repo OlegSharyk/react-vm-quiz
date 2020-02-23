@@ -100,6 +100,7 @@ export default class QuizCreator extends Component {
         event.preventDefault();
 
         console.log(this.state.quiz);
+        // TODO: server
     };
 
     changeHandler = (value, controlName) => {
