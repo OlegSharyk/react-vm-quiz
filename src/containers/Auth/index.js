@@ -3,9 +3,10 @@ import classes from './styles.css';
 import Button from '../../components/UI/Button';
 import Input from '../../components/UI/Input';
 import is from 'is_js';
-import axios from 'axios';
+import { connect } from 'react-redux';
+import { auth } from '../../store/actions/auth';
 
-export default class Auth extends Component {
+class Auth extends Component {
     state = {
         isFormValid: false,
         formControls: {
@@ -36,43 +37,23 @@ export default class Auth extends Component {
         },
     };
 
-    loginHandler = async () => {
-        const authData = {
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true,
-        };
-        try {
-            const response = await axios.post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyATDQAreho6C9Qi13gCFt7skDMPma6Oyjc',
-                authData,
-            );
-
-            console.log(response.data);
-        } catch (e) {
-            console.log(e);
-        }
+    loginHandler = () => {
+        this.props.auth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            true,
+        );
     };
 
-    registerHandler = async () => {
-        const authData = {
-            email: this.state.formControls.email.value,
-            password: this.state.formControls.password.value,
-            returnSecureToken: true,
-        };
-        try {
-            const response = await axios.post(
-                'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyATDQAreho6C9Qi13gCFt7skDMPma6Oyjc',
-                authData,
-            );
-
-            console.log(response.data);
-        } catch (e) {
-            console.log(e);
-        }
+    registerHandler = () => {
+        this.props.auth(
+            this.state.formControls.email.value,
+            this.state.formControls.password.value,
+            false,
+        );
     };
 
-    submitHandler = event => {
+    submitHandler = (event) => {
         event.preventDefault();
     };
 
@@ -110,7 +91,7 @@ export default class Auth extends Component {
 
         let isFormValid = true;
 
-        Object.keys(formControls).forEach(name => {
+        Object.keys(formControls).forEach((name) => {
             isFormValid = formControls[name].valid && isFormValid;
         });
 
@@ -131,7 +112,7 @@ export default class Auth extends Component {
                         label={control.label}
                         errorMessage={control.errorMessage}
                         shouldValidate={!!control.validation}
-                        onChange={event =>
+                        onChange={(event) =>
                             this.onChangeHandler(event, controlName)
                         }
                     />
@@ -173,3 +154,12 @@ export default class Auth extends Component {
         );
     }
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        auth: (email, password, isLogin) =>
+            dispatch(auth(email, password, isLogin)),
+    };
+}
+
+export default connect(null, mapDispatchToProps)(Auth);
